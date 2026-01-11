@@ -1,0 +1,263 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_config.site_name }} | By Students, For Students</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --card-bg: #111113;
+            --accent-blue: #003399;
+            --accent-gold: #FFD700;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #fafafa;
+            overflow-x: hidden;
+        }
+
+        /* Modern Linear Border Effect */
+        .linear-border {
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .linear-border:hover {
+            border-color: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.05);
+            transform: translateY(-4px);
+        }
+
+        /* Bento Grid Layout */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 210px;
+            gap: 1.5rem;
+        }
+
+        /* Modal Blur */
+        .modal-overlay {
+            backdrop-filter: blur(12px);
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        @media (max-width: 1024px) {
+            .bento-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 640px) {
+            .bento-grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 lg:p-12">
+
+    <nav class="flex justify-between items-center max-w-7xl mx-auto mb-16">
+        <a href="{% url 'core:home' %}" class="flex items-center space-x-4 hover:opacity-80 transition">
+            <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-1">
+                {% if site_config.site_logo %}
+                    <img src="{{ site_config.site_logo.url }}" alt="{{ site_config.site_name }} Logo" class="w-full h-full object-contain">
+                {% else %}
+                    <!-- NIT Patna Official Logo -->
+                    <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="100" r="95" fill="#0052CC" stroke="#FFD700" stroke-width="3"/>
+                        <circle cx="100" cy="100" r="75" fill="#FFD700"/>
+                        <circle cx="100" cy="100" r="65" fill="none" stroke="#FF6B00" stroke-width="2"/>
+                        <path d="M100 30 L110 55 L135 55 L115 70 L125 95 L100 80 L75 95 L85 70 L65 55 L90 55 Z" fill="#FF0000"/>
+                        <text x="100" y="140" font-size="16" font-weight="bold" text-anchor="middle" fill="#0052CC">NIT</text>
+                    </svg>
+                {% endif %}
+            </div>
+            <div>
+                <h1 class="text-xl font-black tracking-tighter">{{ site_config.site_name|upper }}</h1>
+                <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em]">NIT Patna • 2026</p>
+            </div>
+        </a>
+        <div class="hidden md:flex space-x-10 text-sm font-semibold text-zinc-400">
+            {% for link in nav_links %}
+                <a href="{{ link.url }}" class="hover:text-white transition">{{ link.label }}</a>
+            {% endfor %}
+            <a href="/admin/" class="px-5 py-2 bg-zinc-900 border border-zinc-800 rounded-full text-zinc-200 hover:bg-zinc-800 transition">Admin</a>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto bento-grid mb-12">
+        
+        <div class="md:col-span-2 md:row-span-2 linear-border rounded-[2.5rem] p-10 flex flex-col justify-between overflow-hidden group">
+            <div class="relative z-10">
+                <div class="w-14 h-14 bg-yellow-400/10 text-yellow-500 rounded-2xl flex items-center justify-center mb-8">
+                    <i data-lucide="library"></i>
+                </div>
+                <h2 class="text-5xl font-black mb-6 leading-none tracking-tighter">Exam <br>Vault 2.0</h2>
+                <p class="text-zinc-400 text-lg max-w-sm font-medium">Access every Mid-Sem & End-Sem PYQ and curated branch notes. Your academic edge starts here.</p>
+            </div>
+            <a href="{% url 'vault:list' %}" class="w-fit bg-white text-black px-8 py-4 rounded-2xl font-bold flex items-center group-hover:bg-yellow-400 transition-colors">
+                Explore Repository <i data-lucide="move-right" class="ml-3 w-5 h-5"></i>
+            </a>
+            <div class="absolute -bottom-12 -right-12 w-80 h-80 bg-yellow-400/5 rounded-full blur-[100px]"></div>
+        </div>
+
+        <div class="md:col-span-2 linear-border rounded-[2.5rem] p-10 flex items-center justify-between">
+            <div class="flex-1">
+                <div class="flex items-center space-x-3 mb-4">
+                    <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                    <h3 class="font-black text-2xl uppercase tracking-tighter">Opportunities</h3>
+                </div>
+                <p class="text-zinc-400 font-medium">Startup workshop, Super 10, scholarships, and more.</p>
+            </div>
+            <i data-lucide="trending-up" class="text-zinc-700 w-12 h-12"></i>
+        </div>
+
+
+        <a href="{% url 'guidance:guidance_home' %}" class="linear-border rounded-[2.5rem] p-8 flex flex-col justify-between bg-zinc-900/20 hover:border-blue-500/50 transition no-underline">
+            <div class="w-12 h-12 bg-blue-500/10 text-blue-500 rounded-xl flex items-center justify-center mb-4">
+                <i data-lucide="users"></i>
+            </div>
+            <div>
+                <h4 class="font-bold text-lg leading-tight text-blue-300">Senior Guidance</h4>
+                <p class="text-[11px] text-zinc-500 mt-2 font-medium">Connect with verified mentors for learning roadmaps, projects, and innovation.</p>
+                <span class="mt-4 text-sm font-semibold text-blue-400 flex items-center gap-2">Explore <i data-lucide="move-right" class="w-4 h-4"></i></span>
+            </div>
+        </a>
+
+        <div onclick="openVisionModal()" class="linear-border rounded-[2.5rem] p-8 bg-gradient-to-br from-zinc-900 to-black overflow-hidden flex flex-col group">
+            <i data-lucide="eye" class="text-zinc-500 mb-6 w-6 h-6"></i>
+            <h4 class="font-bold text-lg mb-3">Our Vision</h4>
+            <div class="text-[11px] text-zinc-400 font-medium italic overflow-hidden">
+                <p class="line-clamp-4 group-hover:text-zinc-300 transition-colors">
+                    {{ site_config.vision_statement|truncatewords:15 }}
+                </p>
+                <span class="text-yellow-500 text-[10px] mt-2 block font-bold">Click to see eye-opener →</span>
+            </div>
+        </div>
+
+        <div class="md:col-span-2 linear-border rounded-[2.5rem] p-10 flex flex-col justify-center border-dashed border-zinc-700">
+            <h3 class="text-2xl font-black mb-2 uppercase tracking-tight">Help Others</h3>
+            <p class="text-zinc-500 text-sm mb-8 font-medium">Become a mentor or share your knowledge resources.</p>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <a href="{% url 'core:apply_mentor' %}" class="flex-1 py-4 bg-zinc-800 rounded-2xl text-sm font-bold border border-zinc-700 hover:bg-zinc-700 transition text-center">
+                    Become a Mentor
+                </a>
+                <button class="flex-1 py-4 bg-zinc-100 text-black rounded-2xl text-sm font-bold hover:bg-white transition">
+                    Provide Resources
+                </button>
+            </div>
+        </div>
+
+        <div class="md:col-span-2 linear-border rounded-[2.5rem] p-10 flex items-center justify-between bg-zinc-900/40">
+            <div class="flex-1">
+                <h3 class="font-black text-2xl uppercase tracking-tighter mb-4">Guided Toolkit</h3>
+                <p class="text-zinc-400 font-medium">Electronics kits, laptops & books recommended by seniors.</p>
+            </div>
+            <div class="w-16 h-16 bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center">
+                <i data-lucide="shopping-cart"></i>
+            </div>
+        </div>
+
+    </div>
+
+    {% if bento_cards %}
+    <div class="max-w-7xl mx-auto bento-grid mb-12">
+        {% for card in bento_cards %}
+        <div
+            class="linear-border rounded-[2.5rem] p-8 flex flex-col justify-between {{ card.bg_color }}"
+            style="grid-column: span {{ card.grid_cols }}; grid-row: span {{ card.grid_rows }};"
+        >
+            <div class="flex items-start justify-between gap-4 mb-6">
+                <div class="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-yellow-400">
+                    <i data-lucide="{{ card.icon_name }}" class="w-6 h-6"></i>
+                </div>
+                {% if card.link_url %}
+                    <a href="{{ card.link_url }}" class="text-xs text-zinc-400 hover:text-white font-semibold">Open</a>
+                {% endif %}
+            </div>
+            <div class="space-y-3">
+                <h4 class="font-bold text-lg leading-tight">{{ card.title }}</h4>
+                <p class="text-[12px] text-zinc-400 font-medium leading-relaxed">{{ card.description }}</p>
+            </div>
+            {% if card.button_text and card.link_url %}
+            <div class="mt-6">
+                <a href="{{ card.link_url }}" class="inline-flex items-center px-5 py-3 bg-white text-black rounded-2xl font-semibold hover:bg-yellow-400 transition-colors">
+                    {{ card.button_text }}
+                    <i data-lucide="move-right" class="ml-2 w-4 h-4"></i>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="max-w-7xl mx-auto mb-20 p-10 linear-border rounded-[3rem] bg-gradient-to-r from-zinc-900/50 to-transparent">
+        <div class="flex flex-col md:flex-row items-center gap-10">
+            <div class="flex-1">
+                <h2 class="text-3xl font-black mb-4 tracking-tighter">Contact & Senior Guidance</h2>
+                <p class="text-zinc-400 font-medium leading-relaxed mb-6 text-sm">
+                    Reach out for academic doubts, learning paths, project ideas, and career exploration. Seniors guide juniors through structured roadmaps.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    <span class="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-full text-[10px] font-bold text-zinc-300 flex items-center">
+                        📧 Email-based guidance
+                    </span>
+                    <span class="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-full text-[10px] font-bold text-zinc-300 flex items-center">
+                        📍 Campus-verified seniors
+                    </span>
+                    <span class="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-full text-[10px] font-bold text-zinc-300 flex items-center">
+                        🧭 Learning & innovation roadmaps
+                    </span>
+                </div>
+            </div>
+            <a href="{% url 'core:send_inquiry' %}" class="px-10 py-5 bg-blue-600 rounded-[2rem] font-black text-lg hover:bg-blue-500 transition shadow-2xl shadow-blue-900/20 whitespace-nowrap">
+                Connect Now
+            </a>
+        </div>
+    </div>
+
+    <footer class="max-w-7xl mx-auto pt-12 pb-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-8">
+        <p class="text-zinc-500 text-[13px] font-bold">{{ site_config.footer_text }}</p>
+        <div class="flex space-x-8 text-[11px] font-black uppercase tracking-widest text-zinc-500">
+            {% for link in nav_links %}
+                <a href="{{ link.url }}" class="hover:text-white transition">{{ link.label }}</a>
+            {% endfor %}
+        </div>
+    </footer>
+
+    <div id="visionModal" class="fixed inset-0 z-50 modal-overlay hidden flex items-center justify-center p-4">
+        <div class="bg-zinc-950 border border-zinc-800 p-10 rounded-[3rem] max-w-2xl w-full relative shadow-2xl">
+            <button onclick="closeVisionModal()" class="absolute top-6 right-6 text-zinc-500 hover:text-white">
+                <i data-lucide="x-circle"></i>
+            </button>
+            <h2 class="text-3xl font-black mb-6 text-yellow-500 tracking-tighter uppercase">Our Full Vision</h2>
+            <p class="text-xl text-zinc-200 font-medium italic leading-relaxed">
+                "{{ site_config.vision_statement }}"
+            </p>
+            <div class="mt-8 pt-8 border-t border-zinc-900 text-zinc-500 text-sm">
+                Innovation Hub is community-driven. Peer-to-peer knowledge sharing is our core strength.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        function openVisionModal() {
+            document.getElementById('visionModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeVisionModal() {
+            document.getElementById('visionModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+</body>
+</html>

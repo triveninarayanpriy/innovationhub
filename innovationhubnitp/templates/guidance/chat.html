@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat | Innovation Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #09090b; color: #fafafa; }
+        .card { background: #111113; border: 1px solid rgba(255,255,255,0.08); }
+    </style>
+</head>
+<body class="p-6 md:p-10">
+    <nav class="max-w-4xl mx-auto mb-8 flex items-center justify-between">
+        <a href="javascript:history.back()" class="flex items-center space-x-2 text-zinc-400 hover:text-white">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            <span class="font-semibold">Back</span>
+        </a>
+        <a href="{% url 'guidance:guidance_home' %}" class="text-sm font-semibold text-zinc-400 hover:text-white">Guidance Home</a>
+    </nav>
+
+    <div class="max-w-4xl mx-auto card rounded-[1.75rem] p-6 md:p-8 space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-xs text-zinc-500 uppercase tracking-widest">Approved Chat</p>
+                <h1 class="text-2xl font-black">{{ mentor_request.student.get_full_name|default:mentor_request.student.email }} ↔ {{ mentor_request.mentor.user.get_full_name|default:mentor_request.mentor.user.email }}</h1>
+            </div>
+            <span class="text-xs bg-green-500/10 text-green-400 px-3 py-1 rounded-full font-bold">Approved</span>
+        </div>
+
+        <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+            {% for msg in messages %}
+                {% if msg.sender_id == request.user.id %}
+                <div class="flex justify-end">
+                    <div class="max-w-[75%] px-4 py-3 rounded-2xl border border-zinc-800 bg-blue-600 text-white">
+                        <div class="flex items-center justify-between mb-1 text-xs text-white/80">
+                            <span>{{ msg.sender.get_full_name|default:msg.sender.email }}</span>
+                            <span class="text-[11px] text-white/70">{{ msg.sent_at|date:"M d, H:i" }}</span>
+                        </div>
+                        <p class="text-sm leading-relaxed">{{ msg.message }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="flex justify-start">
+                    <div class="max-w-[75%] px-4 py-3 rounded-2xl border border-zinc-800 bg-zinc-900">
+                        <div class="flex items-center justify-between mb-1 text-xs text-zinc-300">
+                            <span>{{ msg.sender.get_full_name|default:msg.sender.email }}</span>
+                            <span class="text-[11px] text-zinc-400">{{ msg.sent_at|date:"M d, H:i" }}</span>
+                        </div>
+                        <p class="text-sm leading-relaxed">{{ msg.message }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            {% empty %}
+                <p class="text-sm text-zinc-500">No messages yet. Say hello!</p>
+            {% endfor %}
+        </div>
+
+        <form method="post" class="flex items-center gap-3">
+            {% csrf_token %}
+            {{ form.message }}
+            <button type="submit" class="px-4 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold">Send</button>
+        </form>
+    </div>
+
+    <script>lucide.createIcons();</script>
+</body>
+</html>

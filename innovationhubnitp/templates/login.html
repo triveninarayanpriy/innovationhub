@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Login | Innovation Hub NITP</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #09090b; color: #fafafa; }
+        .card { background: #111113; border: 1px solid rgba(255, 255, 255, 0.08); }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-md">
+        <!-- Header -->
+        <div class="mb-12 text-center">
+            <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center p-1 mx-auto mb-6">
+                <span class="text-sm font-black text-black">NITP</span>
+            </div>
+            <h1 class="text-3xl font-black tracking-tighter mb-2">Welcome Back</h1>
+            <p class="text-zinc-500 text-sm">Login to access the Senior Guidance Portal</p>
+        </div>
+
+        <!-- Login Form -->
+        <div class="card rounded-[2rem] p-8 space-y-6 mb-6">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Email Field -->
+                <div>
+                    <label for="email" class="block text-sm font-bold uppercase tracking-wider mb-2 text-zinc-300">
+                        Email Address
+                    </label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        placeholder="your.email@nitp.ac.in"
+                        class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 placeholder-zinc-600"
+                    />
+                    <p class="text-xs text-zinc-500 mt-2">Only @nitp.ac.in emails are allowed</p>
+                </div>
+
+                <!-- Password Field -->
+                <div>
+                    <label for="password" class="block text-sm font-bold uppercase tracking-wider mb-2 text-zinc-300">
+                        Password
+                    </label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                        placeholder="Enter your password"
+                        class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 placeholder-zinc-600"
+                    />
+                </div>
+
+                <!-- Submit Button -->
+                <button
+                    type="submit"
+                    class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition flex items-center justify-center gap-3"
+                >
+                    <span class="material-symbols-outlined" style="font-size: 20px;">login</span>
+                    <span>Login</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Sign Up & Help Links -->
+        <div class="space-y-3 text-sm text-center">
+            <p class="text-zinc-500">
+                Don't have an account?
+                <a href="{% url 'core:home' %}" class="text-blue-400 hover:text-blue-300 font-semibold">Contact us</a>
+            </p>
+            <p class="text-zinc-600 text-xs">
+                Only NIT Patna students and faculty with @nitp.ac.in emails can access this portal.
+            </p>
+        </div>
+
+        <!-- Back to Home -->
+        <div class="mt-8 text-center">
+            <a href="{% url 'core:home' %}" class="text-zinc-400 hover:text-white font-semibold flex items-center justify-center gap-2">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>Back to Home</span>
+            </a>
+        </div>
+    </div>
+
+    <script>lucide.createIcons();</script>
+</body>
+</html>

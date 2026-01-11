@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Senior Guidance | Innovation Hub NITP</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700" rel="stylesheet"/>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #09090b; color: #fafafa; }
+        .linear-card { background: #111113; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.3s ease; }
+        .linear-card:hover { border-color: #3b82f6; box-shadow: 0 0 30px rgba(59, 130, 246, 0.1); }
+    </style>
+</head>
+<body class="overflow-x-hidden w-full">
+
+<header class="sticky top-0 z-50 w-full border-b border-zinc-800 bg-black/80 backdrop-blur-md">
+    <div class="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
+        <a href="{% url 'core:home' %}" class="flex items-center gap-4 hover:opacity-80 transition">
+            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center p-1">
+                {% if site_config.site_logo %}
+                    <img src="{{ site_config.site_logo.url }}" alt="{{ site_config.site_name }} Logo" class="w-full h-full object-contain">
+                {% else %}
+                    <span class="text-sm font-black text-black">NITP</span>
+                {% endif %}
+            </div>
+            <div>
+                <h2 class="text-lg font-black tracking-tighter uppercase leading-none text-white">{{ site_config.site_name }}</h2>
+                <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">NIT Patna • 2026</p>
+            </div>
+        </a>
+        <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-zinc-400">
+            {% for link in nav_links %}
+                <a href="{{ link.url }}" class="hover:text-white transition">{{ link.label }}</a>
+            {% endfor %}
+            {% if user.is_authenticated %}
+            <span class="text-zinc-300 text-xs">{{ user.email }}</span>
+            <a href="/logout/" class="px-5 py-2 bg-red-600 border border-red-700 rounded-full text-white hover:bg-red-500 transition">Logout</a>
+            {% endif %}
+            <a href="/admin/" class="px-5 py-2 bg-zinc-900 border border-zinc-800 rounded-full text-zinc-200 hover:bg-zinc-800 transition">Admin</a>
+        </nav>
+    </div>
+</header>
+
+<main class="flex flex-col items-center w-full">
+    <section class="w-full max-w-7xl px-6 py-16 md:py-24">
+        <div class="flex flex-col lg:flex-row items-center gap-12">
+            <div class="flex flex-col gap-8 flex-1 text-center lg:text-left">
+                <h1 class="text-5xl md:text-7xl font-black leading-tight tracking-tighter">
+                    Contribute & Mentor: <br/>
+                    <span class="text-blue-500 italic">The Cycle of Growth</span>
+                </h1>
+                <p class="text-zinc-400 text-lg md:text-xl font-medium max-w-2xl">
+                    Seniors help juniors, juniors become future mentors. Join verified NITP seniors today to build real solutions.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <button onclick="window.location.href='/login/'" class="flex items-center justify-center gap-3 rounded-2xl h-14 px-8 bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all shadow-xl shadow-blue-900/20 cursor-pointer border-0">
+                        <span class="material-symbols-outlined">login</span>
+                        <span>Login</span>
+                    </button>
+                    {% if site_config.guidance_video_url %}
+                    <a href="{{ site_config.guidance_video_url }}" target="_blank" class="flex items-center justify-center gap-3 rounded-2xl h-14 px-8 border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 transition-all">
+                        <span class="material-symbols-outlined">play_circle</span>
+                        <span class="font-bold">Watch Video</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="w-full lg:w-1/2 linear-card rounded-[3rem] overflow-hidden p-2">
+                {% if site_config.guidance_hero_image %}
+                    <img src="{{ site_config.guidance_hero_image.url }}" class="rounded-[2.5rem] w-full h-80 object-cover grayscale hover:grayscale-0 transition duration-700" alt="Guidance Hero">
+                {% else %}
+                    <div class="rounded-[2.5rem] w-full h-80 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500">Upload hero image in admin</div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <section id="mentors" class="w-full max-w-7xl px-6 py-20">
+        <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-12">
+            <div>
+                <h2 class="text-4xl font-black tracking-tighter uppercase mb-2">Verified Mentors</h2>
+                <p class="text-zinc-500 font-medium italic">Available seniors from your branch.</p>
+            </div>
+            <a href="{% url 'core:apply_mentor' %}" class="px-8 py-3 bg-zinc-900 border border-zinc-800 rounded-xl font-bold hover:bg-zinc-800 transition">Become a Mentor</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for mentor in approved_mentors %}
+            <div class="linear-card p-8 rounded-[2.5rem] flex flex-col gap-6">
+                <div class="flex items-center gap-4">
+                    {% if mentor.avatar %}
+                        <img src="{{ mentor.avatar.url }}" class="w-16 h-16 rounded-full border-2 border-zinc-800 object-cover" alt="{{ mentor.user.get_full_name|default:mentor.user.email }}">
+                    {% else %}
+                        <div class="w-16 h-16 rounded-full border-2 border-zinc-800 bg-zinc-900 flex items-center justify-center text-lg font-bold text-white">
+                            {{ mentor.user.get_full_name|default:mentor.user.email|slice:":1"|upper }}
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h3 class="font-bold text-lg text-white">{{ mentor.user.get_full_name|default:mentor.user.email }}</h3>
+                        <p class="text-[10px] text-zinc-500 font-bold uppercase">{{ mentor.get_branch_display }} • {{ mentor.year }} Year</p>
+                    </div>
+                </div>
+                <p class="text-sm text-zinc-400 flex-1">{{ mentor.bio|default:"Mentor ready to guide you through projects and academics." }}</p>
+                {% if mentor.student_request_id %}
+                <a href="{% url 'guidance:chat' mentor.student_request_id %}" class="w-full py-4 bg-green-600 rounded-2xl font-bold text-sm text-center hover:bg-green-500 transition">💬 Send Message</a>
+                {% elif user.is_authenticated %}
+                <a href="{% url 'guidance:request_guidance' mentor.id %}" class="w-full py-4 bg-blue-600 rounded-2xl font-bold text-sm text-center hover:bg-blue-500 transition">Request Guidance</a>
+                {% else %}
+                <a href="/login/" class="w-full py-4 bg-blue-600 rounded-2xl font-bold text-sm text-center hover:bg-blue-500 transition">Login to Request</a>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="col-span-1 md:col-span-3 text-center text-zinc-500">No mentors approved yet. Check back soon.</div>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+
+<footer class="w-full py-16 border-t border-zinc-900 text-center">
+    <p class="text-zinc-500 text-[13px] font-bold uppercase tracking-widest">
+        © 2026 Innovation Hub NIT Patna • <span class="text-white">By Students, For Students</span>
+    </p>
+</footer>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

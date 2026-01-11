@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Dashboard | Innovation Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #09090b; color: #fafafa; }
+        .card { background: #111113; border: 1px solid rgba(255,255,255,0.08); }
+    </style>
+</head>
+<body class="p-6 md:p-10">
+    <nav class="max-w-6xl mx-auto mb-10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <a href="{% url 'guidance:guidance_home' %}" class="flex items-center space-x-2 text-zinc-400 hover:text-white">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                <span class="font-semibold">Guidance Home</span>
+            </a>
+        </div>
+        <a href="{% url 'core:home' %}" class="text-sm font-semibold text-zinc-400 hover:text-white">Home</a>
+    </nav>
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="card rounded-[1.75rem] p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-black">Pending Requests</h2>
+                <span class="text-xs text-zinc-500">Students see only their status</span>
+            </div>
+            <div class="space-y-5">
+                {% for req in pending_requests %}
+                    <div class="border border-zinc-800 rounded-xl p-4 bg-zinc-900/40">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-semibold">{{ req.student.get_full_name|default:req.student.email }}</p>
+                                <p class="text-xs text-zinc-500">WhatsApp: {{ req.student_whatsapp }}</p>
+                            </div>
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="approve_id" value="{{ req.id }}" />
+                                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-bold">Approve</button>
+                            </form>
+                        </div>
+                        <p class="text-sm text-zinc-400 mt-2">{{ req.message }}</p>
+                    </div>
+                {% empty %}
+                    <p class="text-zinc-500 text-sm">No pending requests.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card rounded-[1.75rem] p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-black">Approved & Chats</h2>
+                <span class="text-xs text-zinc-500">Click to open chat</span>
+            </div>
+            <div class="space-y-5">
+                {% for req in approved_requests %}
+                    <a href="{% url 'guidance:chat' req.id %}" class="block border border-zinc-800 rounded-xl p-4 bg-zinc-900/40 hover:border-blue-600 transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-semibold">{{ req.student.get_full_name|default:req.student.email }}</p>
+                                <p class="text-xs text-zinc-500">WhatsApp: {{ req.student_whatsapp }}</p>
+                            </div>
+                            <span class="text-xs text-green-400 font-bold">Approved</span>
+                        </div>
+                        <p class="text-sm text-zinc-400 mt-2 line-clamp-2">{{ req.message }}</p>
+                    </a>
+                {% empty %}
+                    <p class="text-zinc-500 text-sm">No approved chats yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>lucide.createIcons();</script>
+</body>
+</html>
