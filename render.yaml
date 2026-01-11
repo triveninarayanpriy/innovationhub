@@ -4,7 +4,7 @@ services:
     runtime: python
     pythonVersion: 3.14.2
     buildCommand: pip install -r requirements.txt
-    startCommand: cd innovationhubnitp && python manage.py migrate --noinput && gunicorn innovationhubnitp.wsgi:application --bind 0.0.0.0:$PORT
+    startCommand: cd innovationhubnitp && python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn innovationhubnitp.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.14.2
