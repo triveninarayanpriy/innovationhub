@@ -3,10 +3,9 @@ services:
     name: innovationhub
     runtime: python
     pythonVersion: 3.14.2
-    rootDir: innovationhubnitp
     build:
-      command: pip install -r ../requirements.txt
-    start: gunicorn innovationhubnitp.wsgi:application --bind 0.0.0.0:$PORT
+      command: pip install -r requirements.txt
+    start: sh -c 'cd innovationhubnitp && gunicorn innovationhubnitp.wsgi:application --bind 0.0.0.0:$PORT'
     envVars:
       - key: PYTHON_VERSION
         value: 3.14.2
