@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.views.generic import TemplateView
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -112,3 +113,8 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'You have been logged out successfully.')
     return redirect('guidance:guidance_home')
+
+
+def health(request):
+    """Lightweight health check endpoint for uptime pings."""
+    return HttpResponse('ok')
