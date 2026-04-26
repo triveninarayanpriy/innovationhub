@@ -25,9 +25,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-^&m*v#u+p@!q_z9(k2s)5w%d_6h7j8k9l0-x=y+z_innovationhubnitp')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver', 'innovationhub-1.onrender.com', '*.onrender.com']
+
+def _csv_env(name, default=''):
+    return [item.strip() for item in config(name, default=default).split(',') if item.strip()]
+
+
+ALLOWED_HOSTS = _csv_env(
+    'ALLOWED_HOSTS',
+    default='localhost,127.0.0.1,testserver,.onrender.com,.vercel.app',
+)
+
+CSRF_TRUSTED_ORIGINS = _csv_env(
+    'CSRF_TRUSTED_ORIGINS',
+    default='https://*.onrender.com,https://*.vercel.app',
+)
 
 
 # Application definition
