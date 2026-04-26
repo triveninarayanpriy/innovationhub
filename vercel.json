@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "cd innovationhubnitp && python manage.py collectstatic --noinput",
+  "buildCommand": "python innovationhubnitp/manage.py collectstatic --noinput",
   "builds": [
     {
       "src": "api/index.py",
