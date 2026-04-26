@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.db import OperationalError
 from .models import BentoCard, MentorApplication, Inquiry
 from .forms import MentorApplicationForm, InquiryForm
 
@@ -14,14 +15,24 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['bento_cards'] = BentoCard.objects.filter(is_active=True)
+        try:
+            context['bento_cards'] = BentoCard.objects.filter(is_active=True)
+        except (OperationalError, Exception):
+            # Gracefully handle database unavailability
+            context['bento_cards'] = []
         return context
 
 
 def home(request):
     """Simple function-based view for homepage."""
+    try:
+        bento_cards = BentoCard.objects.filter(is_active=True)
+    except (OperationalError, Exception):
+        # Gracefully handle database unavailability
+        bento_cards = []
+    
     context = {
-        'bento_cards': BentoCard.objects.filter(is_active=True)
+        'bento_cards': bento_cards
     }
     return render(request, 'home.html', context)
 
@@ -31,13 +42,16 @@ def apply_mentor(request):
     if request.method == 'POST':
         form = MentorApplicationForm(request.POST)
         if form.is_valid():
-            application = form.save()
-            messages.success(
-                request,
-                f'Thank you, {application.full_name}! Your mentor application has been submitted. '
-                'We\'ll review it and get back to you soon.'
-            )
-            return redirect('core:home')
+            try:
+                application = form.save()
+                messages.success(
+                    request,
+                    f'Thank you, {application.full_name}! Your mentor application has been submitted. '
+                    'We\'ll review it and get back to you soon.'
+                )
+                return redirect('core:home')
+            except (OperationalError, Exception) as e:
+                messages.error(request, 'Database error: Unable to save application. Please try again.')
     else:
         form = MentorApplicationForm()
     
@@ -49,13 +63,16 @@ def send_inquiry(request):
     if request.method == 'POST':
         form = InquiryForm(request.POST)
         if form.is_valid():
-            inquiry = form.save()
-            messages.success(
-                request,
-                f'Thank you, {inquiry.student_name}! Your message has been received. '
-                'We\'ll get back to you soon.'
-            )
-            return redirect('core:home')
+            try:
+                inquiry = form.save()
+                messages.success(
+                    request,
+                    f'Thank you, {inquiry.student_name}! Your message has been received. '
+                    'We\'ll get back to you soon.'
+                )
+                return redirect('core:home')
+            except (OperationalError, Exception) as e:
+                messages.error(request, 'Database error: Unable to save inquiry. Please try again.')
     else:
         form = InquiryForm()
     
@@ -69,7 +86,7 @@ def _redirect_after_login(user):
         mentor_profile = MentorProfile.objects.get(user=user)
         if mentor_profile.is_approved:
             return redirect('guidance:mentor_dashboard')
-    except MentorProfile.DoesNotExist:
+    except (MentorProfile.DoesNotExist, OperationalError, Exception):
         pass
     # Default to student guidance view
     return redirect('guidance:guidance_home')
@@ -90,18 +107,22 @@ def login_view(request):
             return render(request, 'login.html')
         
         # Authenticate using email as username (Django default)
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
         try:
-            user = User.objects.get(email=email)
-            user = authenticate(request, username=user.username, password=password)
-            if user is not None:
-                login(request, user)
-                return _redirect_after_login(user)
-            else:
-                messages.error(request, 'Invalid email or password.')
-        except User.DoesNotExist:
-            messages.error(request, 'No account found with this email. Please sign up first.')
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            try:
+                user = User.objects.get(email=email)
+                user = authenticate(request, username=user.username, password=password)
+                if user is not None:
+                    login(request, user)
+                    return _redirect_after_login(user)
+                else:
+                    messages.error(request, 'Invalid email or password.')
+            except User.DoesNotExist:
+                messages.error(request, 'No account found with this email. Please sign up first.')
+                return render(request, 'login.html')
+        except (OperationalError, Exception) as e:
+            messages.error(request, 'Database error: Unable to process login. Please try again.')
             return render(request, 'login.html')
     
     return render(request, 'login.html')
