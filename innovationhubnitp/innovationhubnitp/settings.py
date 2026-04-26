@@ -109,15 +109,15 @@ database_config = dj_database_url.config(
     default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
     conn_max_age=600,
     conn_health_checks=True,
-    ssl_require=not DEBUG,
 )
 
-# Supabase/Postgres on Vercel often needs explicit sslmode=require.
-if database_config.get('ENGINE', '').endswith('postgresql'):
+# Only apply PostgreSQL-specific SSL settings if actually using PostgreSQL
+if 'postgresql' in database_config.get('ENGINE', ''):
     database_config.setdefault('OPTIONS', {})
-    database_config['OPTIONS'].setdefault(
-        'sslmode',
-        config('DB_SSLMODE', default='require' if not DEBUG else 'prefer'),
+    # Supabase/Postgres on Vercel often needs explicit sslmode=require.
+    database_config['OPTIONS']['sslmode'] = config(
+        'DB_SSLMODE', 
+        default='require' if not DEBUG else 'prefer'
     )
 
 DATABASES = {
