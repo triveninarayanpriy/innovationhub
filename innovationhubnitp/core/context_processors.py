@@ -26,7 +26,8 @@ def site_context(request):
         )
     
     try:
-        nav_links = NavbarLink.objects.filter(is_active=True)
+        # Force evaluation of queryset to list to catch DB errors here, not in template
+        nav_links = list(NavbarLink.objects.filter(is_active=True))
     except (OperationalError, Exception):
         nav_links = []
     
