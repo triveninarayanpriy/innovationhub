@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 import dj_database_url
 from decouple import config
@@ -41,6 +42,16 @@ CSRF_TRUSTED_ORIGINS = _csv_env(
     'CSRF_TRUSTED_ORIGINS',
     default='https://*.onrender.com,https://*.vercel.app',
 )
+
+# Add runtime Vercel domain automatically (e.g., <project>.vercel.app).
+VERCEL_URL = os.environ.get('VERCEL_URL', '').strip()
+if VERCEL_URL:
+    if VERCEL_URL not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(VERCEL_URL)
+
+    vercel_origin = f'https://{VERCEL_URL}'
+    if vercel_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(vercel_origin)
 
 
 # Application definition
@@ -92,14 +103,25 @@ WSGI_APPLICATION = 'innovationhubnitp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# Use dj-database-url to parse DATABASE_URL environment variable
-# For local development without .env, falls back to SQLite
-DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
-        conn_max_age=600,
-        conn_health_checks=True,
+# Use dj-database-url to parse DATABASE_URL environment variable.
+# For local development without .env, falls back to SQLite.
+database_config = dj_database_url.config(
+    default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
+    conn_max_age=600,
+    conn_health_checks=True,
+    ssl_require=not DEBUG,
+)
+
+# Supabase/Postgres on Vercel often needs explicit sslmode=require.
+if database_config.get('ENGINE', '').endswith('postgresql'):
+    database_config.setdefault('OPTIONS', {})
+    database_config['OPTIONS'].setdefault(
+        'sslmode',
+        config('DB_SSLMODE', default='require' if not DEBUG else 'prefer'),
     )
+
+DATABASES = {
+    'default': database_config,
 }
 
 
