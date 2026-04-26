@@ -167,7 +167,6 @@
 
     </div>
 
-    {% if bento_cards %}
     <div class="max-w-7xl mx-auto bento-grid mb-12">
         {% for card in bento_cards %}
         <div
@@ -195,9 +194,12 @@
             </div>
             {% endif %}
         </div>
+        {% empty %}
+        <div class="col-span-full linear-border rounded-[2.5rem] p-8 text-center text-zinc-400">
+            No cards available right now.
+        </div>
         {% endfor %}
     </div>
-    {% endif %}
 
     <div class="max-w-7xl mx-auto mb-20 p-10 linear-border rounded-[3rem] bg-gradient-to-r from-zinc-900/50 to-transparent">
         <div class="flex flex-col md:flex-row items-center gap-10">
